@@ -1,0 +1,77 @@
+env, err := New(cliWorkdir, config, loaders...)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "error creating runtime:", err)
+		os.Exit(1)
+	}
+	if cliDevelop.Used {
+		machine := env.Spawn("DEVELOP")
+
+		newWatcher(cliScript, 500, func() {
+			data, err := ioutil.ReadFile(cliScript)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "error reading script:", err)
+				os.Exit(1)
+			}
+			machine.Start(string(data), func(v goja.Value, err error) bool {
+				if err != nil {
+					color.HiRed("Error: %s\n", err)
+				} else if v != nil && v.ExportType() != nil {
+					fmt.Println(v.Export())
+				}
+				return true
+			})
+			machine.Wait()
+		})
+
+		select {}
+
+	} else if cliDaemonRun.Used {
+
+		// Create and run the service.
+		svcConfig.Arguments = []string{"run", os.Args[2]}
+		s, err := service.New(&Service{runtime: env}, svcConfig)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "error creating service:", err)
+			os.Exit(1)
+		}
+		err = s.Run()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+
+	} else {
+		machine := env.Spawn("REPL")
+		//color.New(color.FgHiWhite, color.Bold).Print(name + " " + version)
+		//color.White(" [" + runtime.Version() + "-" + runtime.GOOS + "_" + runtime.GOARCH + "]")
+		prompt.New(func(in string) {
+			err := machine.Start(in, func(v goja.Value, err error) bool {
+				if err != nil {
+					color.HiRed("Error: %s\n", err)
+				} else if v != nil && v.ExportType() != nil {
+					fmt.Println(v.Export())
+				}
+				return false
+			})
+			if err != nil {
+				color.HiRed("Error: %s\n", err)
+			}
+			machine.Wait()
+		}, func(in prompt.Document) []prompt.Suggest {
+			return []prompt.Suggest{}
+		}, prompt.OptionPrefix(">>> "),
+			prompt.OptionTitle(name+" "+version),
+			prompt.OptionPrefixTextColor(prompt.Yellow),
+			prompt.OptionAddKeyBind(prompt.KeyBind{
+				Key: prompt.ControlC,
+				Fn: func(b *prompt.Buffer) {
+					var cmd = exec.Command("/bin/stty", "sane")
+					cmd.Stdin = os.Stdin
+					cmd.Stdout = os.Stdout
+					cmd.Stderr = os.Stderr
+					cmd.Run()
+					os.Exit(0)
+				},
+			})).Run()
+	}

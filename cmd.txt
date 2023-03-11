@@ -1,0 +1,37 @@
+vivid - Violet's inherently versatile Interpreter and Daemon
+
+  Usage: vivid ($script|$folder|command) (arguments)
+
+  Interpreter:
+    In interpreter mode a single thread executes a single script. The vivid.conf next
+    to the given script or folder will be loaded as configuration. If it does not exist
+    the interpreter will fallback to the .vivid folder inside of the users home directory.
+    The gui programming interface is only available in interpreter mode.
+
+    Commands:
+      vivid                                launch interactive REPL in current folder
+      vivid [$folder]                      launch interactive REPL in specified $folder
+      vivid [$script]                      run a single $script from path
+      vivid dev [$script]                  develop a single $script with live reload
+
+  Daemon:
+    In daemon mode multiple threads execute the vivid scripts inside of the given workdir.
+    The vivid.conf inside of the defined workdir will be loaded as configuration.
+
+    Commands:
+      vivid run [$workdir]                 run daemon in $workdir
+      vivid install [$workdir] [$user]     install daemon service in $workdir running as $user
+      vivid uninstall                      uninstall daemon service
+      vivid start                          start deamon service
+      vivid stop                           stop daemon service
+      vivid restart                        restart daemon service
+
+  Info:
+    Commands:
+      vivid doc ($plugin)                  print general and $plugin specific docs
+      vivid update ($version)              update binary to latest or specified $version
+      vivid version                        print vivid version info
+      vivid help                           print this help
+
+
+

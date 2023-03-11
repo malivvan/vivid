@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/malivvan/vlang/internal/crypto"
+	"github.com/malivvan/vivid/internal/crypto"
 
 	"github.com/BurntSushi/toml"
 )
