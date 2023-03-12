@@ -92,12 +92,19 @@ func CLI(config interface{}, loaders ...PluginLoader) {
 		fmt.Println("update to version " + version)
 
 	} else if len(args) == 1 && args[0] == "version" {
-
-		fmt.Println("binary:  " + AppBinary)
-		fmt.Println("version: " + AppVersion)
-		fmt.Println("commit:  " + AppCommit)
-		fmt.Println("build:   " + AppBuild)
-
+		rbg := color.New(color.FgWhite, color.Bold)
+		rbg.Print("REPO\t")
+		fmt.Println(AppRepo)
+		rbg.Print("BINARY\t")
+		fmt.Println(AppBinary)
+		rbg.Print("VERSION\t")
+		fmt.Println(AppVersion)
+		rbg.Print("COMMIT\t")
+		fmt.Println(AppCommit)
+		rbg.Print("BUILD\t")
+		fmt.Println(AppBuild)
+		rbg.Print("PUBKEY\t")
+		fmt.Println(AppPubkey)
 	} else if len(args) == 1 && args[0] == "help" {
 
 		// INFO: Show help.
